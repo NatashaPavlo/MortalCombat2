@@ -1,34 +1,37 @@
 const $arenas = document.querySelector(".arenas");
+const $formFight = document.querySelector('.control');
+const $formFightButton = document.querySelector(".button");
+//вызов констант из ноушена для генерации удара:
+const HIT = {
+  head: 30,
+  body:25,
+  foot:20,
+}
+// генерация удара со стороны противника
+const ATTAK = ['head', 'body', 'foot'];
 
-const $randomButton = document.querySelector(".button");
-
+// кнопка рестарт, которая должна появиться после того, как кто-то проиграет или выиграет? она обновляет страницу
 function createReloadButton() {
-  const $reloadButton  = createElement('div', 'reloadWrap');
-  const $randomButton = createElement('div', "button");
+  const $reloadButtonDiv  = createElement('div', 'reloadWrap');
+  const $reloadButton = createElement('button', "button");
 
-  $randomButton.innerText = 'Restart';
+  $reloadButton.innerText = 'Reload';
 
-
-  $randomButton.addEventListener('click',function click() {
+  $reloadButton.addEventListener('click',function click() {
                             window.location.reload()
                             console.log('ты нажал на кнопку рестарт');
                             } )
-  $reloadButton.appendChild($randomButton);
-  $arenas.appendChild($reloadButton);
+  $reloadButtonDiv.appendChild($reloadButton);
+  $arenas.appendChild($reloadButtonDiv);
 }
-
-
 
 function elHP () {
   return  document.querySelector('.player' + this.player + ' .life'); //возвращаем  document.querySelector, он ссылается на внутреннее поле player (this.player) и выводит 1 или 2
 }
 
- console.log(elHP);
-
 function renderHP() {
-  this.elHp().style.width = this.hp + '%'; // исползует elHP() для того, чтобы взять её содержимое и добавив style.width рисовать (изменять) hp. this.hp указывает на hp объекта, в котором применяется
+  this.elHP().style.width = this.hp + '%'; // исползует elHP() для того, чтобы взять её содержимое и добавив style.width рисовать (изменять) hp. this.hp указывает на hp объекта, в котором применяется
 }
-
 
 function changeHP(HP) {
     this.hp -= HP; //  это то же самое, что и this.hp = this.hp - HP;
@@ -36,13 +39,12 @@ function changeHP(HP) {
         this.hp = 0;
     }
 }
-console.log(renderHP);
 
 const player1 = {
   player: 1,
-  elHp: elHP, //сделала elHP методом объекта player1, elHP вызывается по ключу объекта: elHP,  имя ключа может быть другим, но нужно перерпроверить все вызовы, котрые на него ссылются
-  renderHP: renderHP, //сделала renderHP методом объекта player1, renderHP вызывается по ключу объекта: renderHP имя ключа может быть другим, но нужно перерпроверить все вызовы, котрые на него ссылются
-  changeHP: changeHP, //сделала changeHP методом объекта player1, changeHP вызывается по ключу объекта: changeHP
+  elHP, // ЕСЛИ ФУНКЦИЯ ВНЕШНЯЯ ИМЕЕТ ТАКОЕ ЖЕ ИМЯ КАК В ОБЪЕКТЕ, ТО МЫ МОЖЕМ НАПИСАТЬ ПРОСТО ИМЯ ФУНКЦИИ.
+  renderHP, //сделала renderHP методом объекта player1, renderHP вызывается по ключу объекта: renderHP имя ключа может быть другим, но нужно перерпроверить все вызовы, котрые на него ссылются
+  changeHP, //сделала changeHP методом объекта player1, changeHP вызывается по ключу объекта: changeHP
   name: " Sonya",
   hp: 100,
   img: 'http://reactmarathon-api.herokuapp.com/assets/sonya.gif',
@@ -53,12 +55,11 @@ const player1 = {
   },
 }
 
-
 const player2 = {
   player: 2,
-  elHp: elHP,
-  renderHP: renderHP, //сделала renderHP методом объекта player2, renderHP вызывается по ключу объекта: renderHP
-  changeHP: changeHP,
+  elHP, // ЕСЛИ ФУНКЦИЯ ВНЕШНЯЯ ИМЕЕТ ТАКОЕ ЖЕ ИМЯ КАК В ОБЪЕКТЕ, ТО МЫ МОЖЕМ НАПИСАТЬ ПРОСТО ИМЯ ФУНКЦИИ.
+  renderHP, //сделала renderHP методом объекта player2, renderHP вызывается по ключу объекта: renderHP
+  changeHP,
   name: " Kitana",
   hp: 100,
   img: 'http://reactmarathon-api.herokuapp.com/assets/kitana.gif',
@@ -100,7 +101,7 @@ function createPlayer( playerFunc ) {
 }
 
 function getRandom(num) {
-  return Math.ceil(Math.random()*20);
+  return Math.ceil(Math.random()* num);
 }
 
 function playerWins(name) {
@@ -113,30 +114,70 @@ function playerWins(name) {
   return $winTitle;
   }
 
-
-$randomButton.addEventListener('click', function() {
-    console.log(" ####: Clic Rundom Button");
-    // changeHP(player1);
-    // changeHP(player2);
-    player1.changeHP(getRandom(20)); // в объекте player1 вызываю функцию changeHP() по имени ключа (changeHP, которое может меняться), внутри этой функции я вызываю ф-цию getRandom() и передею в неё аргумент (20)
-    player2.changeHP(getRandom(20)); //в объекте player2 вызываю функцию changeHP() по имени ключа (changeHP), внутри этой функции я вызываю ф-цию getRandom() и передею в неё аргумент (20)
-    player1.renderHP(); // в объекте player1 вызываю функцию renderHP(), по имени ключа (renderHP), чтобы оно перерисовывало жизни игрока
-    player2.renderHP(); // в объекте player2 вызываю функцию renderHP(), по имени ключа (renderHP), чтобы оно перерисовывало жизни игрока
-
-    if ( player1.hp === 0 || player2.hp === 0) {
-  $randomButton.disabled = true;
-    }
-    if (player1.hp < player2.hp && player1.hp == 0) {
-       $arenas.appendChild(playerWins(player2.name));
-       createReloadButton();
-    } else if (player1.hp > player2.hp && player2.hp == 0) {
-      $arenas.appendChild(playerWins(player1.name));
-      createReloadButton();
-    } else if (player1.hp === 0 && player2.hp === 0) {
-      $arenas.appendChild(playerWins());
-      createReloadButton();
-    }
-})
-
 $arenas.appendChild(createPlayer(player1));
 $arenas.appendChild(createPlayer( player2));
+//функция- удар противника
+function enemyAttak() {
+  const hit = ATTAK[getRandom(3) - 1]; // куда бьёт компьютер?
+  const defence = ATTAK[getRandom(3) - 1]; // что защищает компьютер?
+  console.log('####: hit', hit );
+  console.log('####: defence', defence );
+
+  return {
+  value: getRandom(HIT[hit]), //бращаемся к объекту HIT, в который передедим куда бьёт компьютер
+  hit,
+  defence,
+  }
+}
+//обработчик событий на сабмит
+$formFight.addEventListener('submit', function(e) {
+  e.preventDefault();
+  //console.dir($formFight); //убрала, потому что открывается в консоли в развернутом виде, и очень сильно мешает
+  const enemy = enemyAttak();
+  const attack= {}; //создаём пустой объект, потом наполняем
+  //цикл создаёт переменную item и передает в неё запишет каждый элемент массива $formFight
+  for (let item of $formFight) {
+      if (item.checked && item.name === 'hit') {
+        attack.value = getRandom(HIT[item.value]); // записываем в объект attack значените value , он содержит в себе getRandom.
+        attack.hit = item.value; // положили куда мы бьём
+      }
+      if ( item.checked && item.name === 'defence') {
+          attack.defence = item.value;
+      }
+  }
+
+  if (enemy.hit !== attack.defence) {
+          player1.changeHP(enemy.value);
+          player1.renderHP();
+      }
+
+      if (attack.hit !== enemy.defence) {
+          player2.changeHP(attack.value);
+          player2.renderHP();
+      }
+
+  player1.changeHP(enemy.value);
+  player2.changeHP(attack.value);
+
+  player1.renderHP();
+  player2.renderHP();
+
+  if ( player1.hp === 0 || player2.hp === 0) {
+    $formFightButton.disabled = true;
+    createReloadButton();
+      }
+
+      if (player1.hp < player2.hp && player1.hp == 0) {
+         $arenas.appendChild(playerWins(player2.name));
+
+      } else if (player1.hp > player2.hp && player2.hp == 0) {
+        $arenas.appendChild(playerWins(player1.name));
+
+      } else if (player1.hp === 0 && player2.hp === 0) {
+        $arenas.appendChild(playerWins());
+      }
+      //item.checked = false;
+
+  console.log('####: a', attack );
+  console.log('####: e', enemy );
+})
